@@ -6,7 +6,7 @@ TARGET=/var/www/repo/$ORGANIZATION/$MODULE/$MODULE-$VERSION.jar
 
 ./gradle clean test
 
-if [[ "$S" == *SNAPSHOT ]]
+if [[ "$VERSION" == *SNAPSHOT ]]
 then
   echo "Publish $TARGET (overwrite snapshot)"
   cp build/libs/$MODULE-$VERSION.jar $TARGET
