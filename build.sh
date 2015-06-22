@@ -4,7 +4,7 @@ MODULE="geoip"
 VERSION=`grep version= build.gradle | sed "s/version='//g" | sed "s/'//g"`
 TARGET=/var/www/repo/$ORGANIZATION/$MODULE/$MODULE-$VERSION.jar
 
-./gradle clean install
+./gradle clean test install
 
 if [[ "$VERSION" == *SNAPSHOT ]]
 then
