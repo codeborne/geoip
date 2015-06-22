@@ -8,9 +8,11 @@ TARGET=/var/www/repo/$ORGANIZATION/$MODULE/$MODULE-$VERSION.jar
 
 if [[ "$S" == *SNAPSHOT ]]
 then
-  echo "Not publishing (SNAPSHOT version)"
+  echo "Publish $TARGET (overwrite snapshot)"
+  cp build/libs/$MODULE-$VERSION.jar $TARGET
 elif [ -e $TARGET ]; then
   echo "Not publishing ($MODULE-$VERSION already exists)"
 else
+  echo "Publish $TARGET"
   cp build/libs/$MODULE-$VERSION.jar $TARGET
 fi
