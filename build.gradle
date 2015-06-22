@@ -14,7 +14,7 @@ defaultTasks 'test', 'install'
 sourceSets {
   main {
     java {srcDir 'src'}
-    resources {srcDir 'src'}
+    resources {srcDir 'resources'}
   }
   test {
     java {srcDir 'test'}
