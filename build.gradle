@@ -1,0 +1,73 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group='com.codeborne'
+archivesBaseName = 'geoip'
+version='1.0-SNAPSHOT'
+
+compileJava.options.debugOptions.debugLevel = "source,lines,vars"
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+defaultTasks 'test', 'install'
+
+sourceSets {
+  main {
+    java {srcDir 'src'}
+    resources {srcDir 'src'}
+  }
+  test {
+    java {srcDir 'test'}
+    resources {srcDir 'test'}
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  testCompile 'junit:junit:4.12'
+}
+
+task libs(type: Sync) {
+  from configurations.compile
+  from configurations.runtime
+  from configurations.testCompile
+  from configurations.testRuntime
+  into "$buildDir/lib"
+}
+
+classes.dependsOn libs
+
+test {
+  include 'com/codeborne/geoip/**/*'
+  systemProperties['file.encoding'] = 'UTF-8'
+  testLogging.showStandardStreams = true
+}
+
+task sourcesJar(type: Jar, dependsOn:classes) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
+
+javadoc {
+  failOnError=false
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
+artifacts {
+  archives jar
+  archives sourcesJar
+  archives javadocJar
+}
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.4'
+  jarFile = './gradle-wrapper/gradle-wrapper.jar'
+  scriptFile = './gradle'
+}
