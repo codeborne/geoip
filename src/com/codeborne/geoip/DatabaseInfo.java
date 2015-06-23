@@ -20,7 +20,7 @@ import java.util.Date;
  *      <li>ISP edition -- ISP information.
  * </ul>
  *
- * @see lib.geoip.LookupService#getDatabaseInfo()
+ * @see com.codeborne.geoip.LookupService#getDatabaseInfo()
  * @author Matt Tucker
  */
 public class DatabaseInfo {
@@ -60,7 +60,7 @@ public class DatabaseInfo {
   }
 
   public int getType() {
-    if (info == null || info.equals("")) {
+    if (info == null || info.isEmpty()) {
       return COUNTRY_EDITION;
     }
     else {
@@ -77,7 +77,7 @@ public class DatabaseInfo {
    * @return true if the premium version of the database.
    */
   public boolean isPremium() {
-    return info.indexOf("FREE") < 0;
+    return !info.contains("FREE");
   }
 
   /**
