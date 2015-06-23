@@ -48,8 +48,11 @@ test {
 
 jar {
   manifest {
-    attributes("Implementation-Title": project.group + '.' + project.name,
-               "Implementation-Version": version)
+    attributes(
+      "Name": project.group + '.' + project.name,
+      "Implementation-Title": project.group + '.' + project.name,
+      "Implementation-Version": version,
+      "Implementation-Vendor": "Codeborne")
   }
 }
 
