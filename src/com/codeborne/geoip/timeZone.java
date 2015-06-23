@@ -1,7 +1,7 @@
 package com.codeborne.geoip;
 
 @SuppressWarnings("OverlyLongMethod")
-public final class timeZone {
+public final class TimeZone {
   public static String timeZoneByCountryAndRegion(String country, String region) {
     if (country == null) {
       return null;
