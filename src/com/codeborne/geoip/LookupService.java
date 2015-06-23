@@ -177,11 +177,12 @@ public class LookupService {
   }
 
   public static LookupService indexCache() throws IOException {
-    Thread.currentThread().getContextClassLoader().getResource("GeoLiteCity.dat").getFile();
+    Package aPackage = LookupService.class.getPackage();
+    String version = aPackage.getImplementationVersion() == null ? "" : aPackage.getImplementationVersion();
 
     File tmpDir = new File(System.getProperty("java.io.tmpdir"), System.getProperty("user.name"));
-    File databaseFile = new File(tmpDir, "GeoLiteCity.dat");
-    if (!databaseFile.exists()) { // TODO check file version
+    File databaseFile = new File(tmpDir, "GeoLiteCity-" + version + ".dat");
+    if (!databaseFile.exists()) {
       extractDatabaseFile(tmpDir, databaseFile);
     }
 

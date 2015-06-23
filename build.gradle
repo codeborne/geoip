@@ -3,7 +3,7 @@ apply plugin: 'maven'
 
 group='com.codeborne'
 archivesBaseName = 'geoip'
-version='1.0'
+version='1.1-SNAPSHOT'
 
 compileJava.options.debugOptions.debugLevel = "source,lines,vars"
 sourceCompatibility = 1.7
@@ -44,6 +44,13 @@ test {
   include 'com/codeborne/geoip/**/*'
   systemProperties['file.encoding'] = 'UTF-8'
   testLogging.showStandardStreams = true
+}
+
+jar {
+  manifest {
+    attributes("Implementation-Title": project.group + '.' + project.name,
+               "Implementation-Version": version)
+  }
 }
 
 task sourcesJar(type: Jar, dependsOn:classes) {
