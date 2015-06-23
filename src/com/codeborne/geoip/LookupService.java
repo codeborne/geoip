@@ -62,18 +62,18 @@ public class LookupService {
   /**
    * The database type. Default is the country edition.
    */
-  byte databaseType = DatabaseInfo.COUNTRY_EDITION;
+  private byte databaseType = DatabaseInfo.COUNTRY_EDITION;
 
-  int databaseSegments[];
-  int recordLength;
+  private int databaseSegments[];
+  private int recordLength;
 
-  String licenseKey;
-  int dnsService = 0;
-  int dboptions;
-  byte dbbuffer[];
-  byte index_cache[];
-  long mtime;
-  int last_netmask;
+  private String licenseKey;
+  private int dnsService = 0;
+  private int dboptions;
+  private byte dbbuffer[];
+  private byte index_cache[];
+  private long mtime;
+  private int last_netmask;
   private static final int US_OFFSET = 1;
   private static final int CANADA_OFFSET = 677;
   private static final int WORLD_OFFSET = 1353;
@@ -83,6 +83,7 @@ public class LookupService {
   private static final int STATE_BEGIN_REV1 = 16000000;
   private static final int STRUCTURE_INFO_MAX_SIZE = 20;
   private static final int DATABASE_INFO_MAX_SIZE = 100;
+  
   public static final int GEOIP_STANDARD = 0;
   public static final int GEOIP_MEMORY_CACHE = 1;
   public static final int GEOIP_CHECK_CACHE = 2;
@@ -165,14 +166,13 @@ public class LookupService {
 
   /* init the hashmap once at startup time */
   static {
-    int i;
     if (countryCode.length != countryName.length)
       throw new AssertionError("countryCode.length!=countryName.length");
 
     // distributed service only
-    for (i = 0; i < countryCode.length; i++) {
-      hashmapcountryCodetoindex.put(countryCode[i], Integer.valueOf(i));
-      hashmapcountryNametoindex.put(countryName[i], Integer.valueOf(i));
+    for (int i = 0; i < countryCode.length; i++) {
+      hashmapcountryCodetoindex.put(countryCode[i], i);
+      hashmapcountryNametoindex.put(countryName[i], i);
     }
   }
 
@@ -412,9 +412,8 @@ public class LookupService {
       if (file != null) {
         file.close();
       }
-      file = null;
     }
-    catch (Exception e) { }
+    catch (IOException ignore) {}
   }
 
   /**
@@ -613,8 +612,7 @@ public class LookupService {
       return getLocationV6(addr);
     }
     else {
-      String str2 = getDnsAttributes(str);
-      return getLocationwithdnsservice(str2);
+      return getLocationWithDnsService(getDnsAttributes(str));
       // TODO if DNS is not available, go to local file as backup
     }
   }
@@ -638,24 +636,26 @@ public class LookupService {
       return getLocation(addr);
     }
     else {
-      String str2 = getDnsAttributes(str);
-      return getLocationwithdnsservice(str2);
+      return getLocationWithDnsService(getDnsAttributes(str));
       // TODO if DNS is not available, go to local file as backup
     }
   }
 
   String getDnsAttributes(String ip) {
     try {
-      Hashtable env = new Hashtable();
+      Hashtable<String, String> env = new Hashtable();
       env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
       // TODO don't specify ws1, instead use ns servers for s.maxmind.com
       env.put("java.naming.provider.url", "dns://ws1.maxmind.com/");
 
-      DirContext ictx = new InitialDirContext(env);
-      Attributes attrs = ictx.getAttributes(licenseKey + "." + ip + ".s.maxmind.com", new String[]{"txt"});
-      //System.out.println(attrs.get("txt").get());
-      String str = attrs.get("txt").get().toString();
-      return str;
+      DirContext context = new InitialDirContext(env);
+      try {
+        Attributes attrs = context.getAttributes(licenseKey + "." + ip + ".s.maxmind.com", new String[]{"txt"});
+        return attrs.get("txt").get().toString();
+      }
+      finally {
+        context.close();
+      }
     }
     catch (NamingException e) {
       // TODO fix this to handle exceptions
@@ -665,7 +665,7 @@ public class LookupService {
 
   }
 
-  public Location getLocationwithdnsservice(String str) {
+  public Location getLocationWithDnsService(String str) {
     Location record = new Location();
     String key;
     String value;
@@ -750,13 +750,14 @@ public class LookupService {
 
   public synchronized Region getRegion(long ipnum) {
     Region record = new Region();
-    int seek_region = 0;
+    int seek_region;
     if (databaseType == DatabaseInfo.REGION_EDITION_REV0) {
       seek_region = seekCountry(ipnum) - STATE_BEGIN_REV0;
-      char ch[] = new char[2];
       if (seek_region >= 1000) {
         record.countryCode = "US";
         record.countryName = "United States";
+
+        char[] ch = new char[2];
         ch[0] = (char) (((seek_region - 1000) / 26) + 65);
         ch[1] = (char) (((seek_region - 1000) % 26) + 65);
         record.region = new String(ch);
@@ -769,7 +770,6 @@ public class LookupService {
     }
     else if (databaseType == DatabaseInfo.REGION_EDITION_REV1) {
       seek_region = seekCountry(ipnum) - STATE_BEGIN_REV1;
-      char ch[] = new char[2];
       if (seek_region < US_OFFSET) {
         record.countryCode = "";
         record.countryName = "";
@@ -778,6 +778,8 @@ public class LookupService {
       else if (seek_region < CANADA_OFFSET) {
         record.countryCode = "US";
         record.countryName = "United States";
+        
+        char[] ch = new char[2];
         ch[0] = (char) (((seek_region - US_OFFSET) / 26) + 65);
         ch[1] = (char) (((seek_region - US_OFFSET) % 26) + 65);
         record.region = new String(ch);
@@ -785,6 +787,8 @@ public class LookupService {
       else if (seek_region < WORLD_OFFSET) {
         record.countryCode = "CA";
         record.countryName = "Canada";
+
+        char[] ch = new char[2];
         ch[0] = (char) (((seek_region - CANADA_OFFSET) / 26) + 65);
         ch[1] = (char) (((seek_region - CANADA_OFFSET) % 26) + 65);
         record.region = new String(ch);
