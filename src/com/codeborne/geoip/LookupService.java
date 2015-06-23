@@ -4,9 +4,7 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -178,7 +176,34 @@ public class LookupService {
     }
   }
 
-  ;
+  public static LookupService indexCache() throws IOException {
+    Thread.currentThread().getContextClassLoader().getResource("GeoLiteCity.dat").getFile();
+
+    File tmpDir = new File(System.getProperty("java.io.tmpdir"), System.getProperty("user.name"));
+    File databaseFile = new File(tmpDir, "GeoLiteCity.dat");
+    if (!databaseFile.exists()) { // TODO check file version
+      extractDatabaseFile(tmpDir, databaseFile);
+    }
+
+    return new LookupService(databaseFile, GEOIP_INDEX_CACHE);
+  }
+
+  private static void extractDatabaseFile(File tmpDir, File databaseFile) throws IOException {
+    tmpDir.mkdirs();
+
+    File tempFile = File.createTempFile("geoip-", null, tmpDir);
+    try (OutputStream out = new FileOutputStream(tempFile)) {
+      try (InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("GeoLiteCity.dat")) {
+        byte[] buffer = new byte[2048];
+        int read;
+        while ((read = in.read(buffer)) > -1) {
+          out.write(buffer, 0, read);
+        }
+      }
+    }
+
+    tempFile.renameTo(databaseFile);
+  }
 
 
   /**
@@ -221,7 +246,7 @@ public class LookupService {
    * Create a new lookup service using the specified database file.
    *
    * @param databaseFile String representation of the database file.
-   * @throws IOException if an error occured creating the lookup service
+   * @throws IOException if an error occurred creating the lookup service
    *                     from the database file.
    */
   public LookupService(String databaseFile) throws IOException {
@@ -232,7 +257,7 @@ public class LookupService {
    * Create a new lookup service using the specified database file.
    *
    * @param databaseFile the database file.
-   * @throws IOException if an error occured creating the lookup service
+   * @throws IOException if an error occurred creating the lookup service
    *                     from the database file.
    */
   public LookupService(File databaseFile) throws IOException {
@@ -248,7 +273,7 @@ public class LookupService {
    * @param options      database flags to use when opening the database
    *                     GEOIP_STANDARD read database from disk
    *                     GEOIP_MEMORY_CACHE cache the database in RAM and read it from RAM
-   * @throws IOException if an error occured creating the lookup service
+   * @throws IOException if an error occurred creating the lookup service
    *                     from the database file.
    */
   public LookupService(String databaseFile, int options) throws IOException {
@@ -262,7 +287,7 @@ public class LookupService {
    * @param options      database flags to use when opening the database
    *                     GEOIP_STANDARD read database from disk
    *                     GEOIP_MEMORY_CACHE cache the database in RAM and read it from RAM
-   * @throws IOException if an error occured creating the lookup service
+   * @throws IOException if an error occurred creating the lookup service
    *                     from the database file.
    */
   public LookupService(File databaseFile, int options) throws IOException {
