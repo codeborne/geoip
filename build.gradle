@@ -38,7 +38,7 @@ task libs(type: Sync) {
   into "$buildDir/lib"
 }
 
-classes.dependsOn libs
+compileJava.dependsOn libs
 
 test {
   include 'com/codeborne/geoip/**/*'

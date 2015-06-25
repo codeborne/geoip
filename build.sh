@@ -16,7 +16,7 @@ elif [ -e $TARGET ]; then
 elif [ -e $REPO ]; then
   echo "Publish $TARGET"
   cp build/libs/$MODULE-$VERSION.jar $TARGET
-  ./gradle uploadArchives --info
+  ./gradle uploadArchives --info --stacktrace
 else
   echo "Not publishing ($REPO does not exists)"
 fi
