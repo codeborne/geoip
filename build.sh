@@ -2,7 +2,8 @@
 ORGANIZATION="com/codeborne"
 MODULE="geoip"
 VERSION=`grep version= build.gradle | sed "s/version='//g" | sed "s/'//g"`
-TARGET=/var/www/repo/$ORGANIZATION/$MODULE/$MODULE-$VERSION.jar
+REPO=/var/www/repo/$ORGANIZATION/$MODULE
+TARGET=$REPO/$MODULE-$VERSION.jar
 
 ./gradle clean test install
 
@@ -12,7 +13,10 @@ then
   cp build/libs/$MODULE-$VERSION.jar $TARGET
 elif [ -e $TARGET ]; then
   echo "Not publishing ($MODULE-$VERSION already exists)"
-else
+elif [ -e $REPO ]; then
   echo "Publish $TARGET"
   cp build/libs/$MODULE-$VERSION.jar $TARGET
+  ./gradle uploadArchives --info
+else
+  echo "Not publishing ($REPO does not exists)"
 fi
