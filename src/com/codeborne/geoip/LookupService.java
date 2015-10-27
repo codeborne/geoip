@@ -5,9 +5,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import java.io.*;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -178,7 +176,7 @@ public class LookupService {
 
   public static LookupService indexCache() throws IOException {
     Package aPackage = LookupService.class.getPackage();
-    String version = aPackage.getImplementationVersion() == null ? "" : aPackage.getImplementationVersion();
+    String version = aPackage.getImplementationVersion() == null ? getDatabaseLastModificationTime() : aPackage.getImplementationVersion();
 
     File tmpDir = new File(System.getProperty("java.io.tmpdir"), System.getProperty("user.name"));
     File databaseFile = new File(tmpDir, "GeoLiteCity-" + version + ".dat");
@@ -187,6 +185,19 @@ public class LookupService {
     }
 
     return new LookupService(databaseFile, GEOIP_INDEX_CACHE);
+  }
+
+  private static String getDatabaseLastModificationTime() {
+    try {
+      URL resource = Thread.currentThread().getContextClassLoader().getResource("GeoLiteCity.dat");
+      if ("file".equals(resource.getProtocol())) {
+        return String.valueOf(new File(resource.toURI()).lastModified());
+      }
+      return "";
+    }
+    catch (URISyntaxException e) {
+      return "";
+    }
   }
 
   private static void extractDatabaseFile(File tmpDir, File databaseFile) throws IOException {
