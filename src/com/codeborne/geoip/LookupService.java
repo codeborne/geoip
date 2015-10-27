@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
@@ -102,8 +103,8 @@ public class LookupService {
 
   private final Country UNKNOWN_COUNTRY = new Country("--", "N/A");
 
-  private static final HashMap hashmapcountryCodetoindex = new HashMap(512);
-  private static final HashMap hashmapcountryNametoindex = new HashMap(512);
+  private static final Map<String, Integer> countryCodeToIndex = new HashMap<>(512);
+  private static final Map<String, Integer> countryNameToIndex = new HashMap<>(512);
   private static final String[] countryCode = {
       "--", "AP", "EU", "AD", "AE", "AF", "AG", "AI", "AL", "AM", "CW",
       "AO", "AQ", "AR", "AS", "AT", "AU", "AW", "AZ", "BA", "BB",
@@ -169,8 +170,8 @@ public class LookupService {
 
     // distributed service only
     for (int i = 0; i < countryCode.length; i++) {
-      hashmapcountryCodetoindex.put(countryCode[i], i);
-      hashmapcountryNametoindex.put(countryName[i], i);
+      countryCodeToIndex.put(countryCode[i], i);
+      countryNameToIndex.put(countryName[i], i);
     }
   }
 
@@ -190,7 +191,7 @@ public class LookupService {
   private static String getDatabaseLastModificationTime() {
     try {
       URL resource = Thread.currentThread().getContextClassLoader().getResource("GeoLiteCity.dat");
-      if ("file".equals(resource.getProtocol())) {
+      if (resource != null && "file".equals(resource.getProtocol())) {
         return String.valueOf(new File(resource.toURI()).lastModified());
       }
       return "";
@@ -245,7 +246,7 @@ public class LookupService {
   /**
    * Create a new distributed lookup service using the license key
    *
-   * @param options    Resevered for future use
+   * @param options    Reserved for future use
    * @param licenseKey license key provided by Maxmind to access distributed service
    */
   public LookupService(int options, String licenseKey) throws IOException {
@@ -654,7 +655,7 @@ public class LookupService {
 
   String getDnsAttributes(String ip) {
     try {
-      Hashtable<String, String> env = new Hashtable();
+      Hashtable<String, String> env = new Hashtable<>();
       env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
       // TODO don't specify ws1, instead use ns servers for s.maxmind.com
       env.put("java.naming.provider.url", "dns://ws1.maxmind.com/");
@@ -678,29 +679,28 @@ public class LookupService {
 
   public Location getLocationWithDnsService(String str) {
     Location record = new Location();
-    String key;
-    String value;
     StringTokenizer st = new StringTokenizer(str, ";=\"");
     while (st.hasMoreTokens()) {
-      key = st.nextToken();
+      String key = st.nextToken();
+      String value;
       if (st.hasMoreTokens()) {
         value = st.nextToken();
       }
       else {
         value = "";
       }
-      if (key.equals("co")) {
-        Integer i = (Integer) hashmapcountryCodetoindex.get(value);
+      if ("co".equals(key)) {
+        int i = (Integer) countryCodeToIndex.get(value);
         record.countryCode = value;
-        record.countryName = countryName[i.intValue()];
+        record.countryName = countryName[i];
       }
-      if (key.equals("ci")) {
+      if ("ci".equals(key)) {
         record.city = value;
       }
-      if (key.equals("re")) {
+      if ("re".equals(key)) {
         record.region = value;
       }
-      if (key.equals("zi")) {
+      if ("zi".equals(key)) {
         record.postalCode = value;
       }
       // TODO, ISP and Organization
@@ -710,7 +710,7 @@ public class LookupService {
       //if (key.equals("is")) {
       //record.isp = value;
       //}
-      if (key.equals("la")) {
+      if ("la".equals(key)) {
         try {
           record.latitude = Float.parseFloat(value);
         }
@@ -718,7 +718,7 @@ public class LookupService {
           record.latitude = 0;
         }
       }
-      if (key.equals("lo")) {
+      if ("lo".equals(key)) {
         try {
           record.longitude = Float.parseFloat(value);
         }
@@ -727,7 +727,7 @@ public class LookupService {
         }
       }
       // dm depreciated use me ( metro_code ) instead
-      if (key.equals("dm") || key.equals("me")) {
+      if ("dm".equals(key) || "me".equals(key)) {
         try {
           record.metro_code = record.dma_code = Integer.parseInt(value);
         }
@@ -735,7 +735,7 @@ public class LookupService {
           record.metro_code = record.dma_code = 0;
         }
       }
-      if (key.equals("ac")) {
+      if ("ac".equals(key)) {
         try {
           record.area_code = Integer.parseInt(value);
         }
