@@ -18,3 +18,10 @@ A library for searching Location information (country, city, region) by IP.
 ## How to start
 
 Download the latest jar from out repository: https://repo.codeborne.com/com/codeborne/geoip/
+
+## Licensing
+
+The library is distributed under LGPL 3.
+
+This product includes GeoLite data created by MaxMind, available from 
+<a href="http://www.maxmind.com">http://www.maxmind.com</a>.
