@@ -19,9 +19,16 @@ A library for searching Location information (country, city, region) by IP.
 
 Download the latest jar from out repository: https://repo.codeborne.com/com/codeborne/geoip/
 
-## Licensing
+# Thanks
 
-The library is distributed under LGPL 3.
+Many thanks to these incredible tools that help us creating open-source software:
+
+![Intellij IDEA](http://www.jetbrains.com/idea/docs/logo_intellij_idea.png)
+
+![YourKit Java profiler](http://selenide.org/images/yourkit.png)
+
+# License
+geo-ip is open-source project and distributed under [MIT](http://choosealicense.com/licenses/mit/) license
 
 This product includes GeoLite data created by MaxMind, available from 
 <a href="http://www.maxmind.com">http://www.maxmind.com</a>.
