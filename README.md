@@ -19,6 +19,10 @@ A library for searching Location information (country, city, region) by IP.
 
 Download the latest jar from out repository: https://repo.codeborne.com/com/codeborne/geoip/
 
+# Data source
+
+We use the file downloaded from http://dev.maxmind.com/geoip/legacy/geolite/
+
 # Thanks
 
 Many thanks to these incredible tools that help us creating open-source software:
