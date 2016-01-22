@@ -2,6 +2,7 @@ package com.codeborne.geoip;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -44,6 +45,16 @@ public class LookupServiceTest {
     assertEquals("Almaty", location.city);
     assertEquals(43.2565, location.latitude, 0.01);
     assertEquals(76.9284, location.longitude, 0.0001);
+  }
+
+  @Test @Ignore("current implementation of geo-ip fails for this South Sudan address (it's quite new country)")
+  public void location4() throws IOException {
+    Location location = lookupService.getLocation("105.235.210.70");
+    assertEquals("SS", location.countryCode);
+    assertEquals("Южный Судан", location.countryName);
+    assertEquals("Африка", location.city);
+    assertEquals(4.85, location.latitude, 0.01);
+    assertEquals(31.6, location.longitude, 0.0001);
   }
 
   @After
