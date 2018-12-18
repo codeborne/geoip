@@ -33,8 +33,8 @@ public class LookupServiceTest {
     Location location = lookupService.getLocation("213.172.3.234");
     assertEquals("RU", location.countryCode);
     assertEquals("Russian Federation", location.countryName);
-    assertEquals(55.75, location.latitude, 0.01);
-    assertEquals(37.616592, location.longitude, 0.000001);
+    assertEquals(59.89, location.latitude, 0.01);
+    assertEquals(30.2642059, location.longitude, 0.000001);
   }
 
   @Test
