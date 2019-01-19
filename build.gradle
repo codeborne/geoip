@@ -74,9 +74,3 @@ artifacts {
   archives sourcesJar
   archives javadocJar
 }
-
-task wrapper(type: Wrapper) {
-  gradleVersion = '3.3'
-  jarFile = './gradle-wrapper/gradle-wrapper.jar'
-  scriptFile = './gradle'
-}
