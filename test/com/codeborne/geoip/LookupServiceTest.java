@@ -6,8 +6,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class LookupServiceTest {
   LookupService lookupService;
@@ -18,7 +20,7 @@ public class LookupServiceTest {
   }
 
   @Test
-  public void location1() throws IOException {
+  public void location1() {
     Location location = lookupService.getLocation("217.71.44.212");
     assertEquals("EE", location.countryCode);
     assertEquals("Estonia", location.countryName);
@@ -29,7 +31,7 @@ public class LookupServiceTest {
   }
   
   @Test
-  public void location2() throws IOException {
+  public void location2() {
     Location location = lookupService.getLocation("213.172.3.234");
     assertEquals("RU", location.countryCode);
     assertEquals("Russian Federation", location.countryName);
@@ -38,7 +40,7 @@ public class LookupServiceTest {
   }
 
   @Test
-  public void location3() throws IOException {
+  public void location3() {
     Location location = lookupService.getLocation("85.117.103.134");
     assertEquals("KZ", location.countryCode);
     assertEquals("Kazakhstan", location.countryName);
@@ -48,13 +50,21 @@ public class LookupServiceTest {
   }
 
   @Test @Ignore("current implementation of geo-ip fails for this South Sudan address (it's quite new country)")
-  public void location4() throws IOException {
+  public void location4() {
     Location location = lookupService.getLocation("105.235.210.70");
     assertEquals("SS", location.countryCode);
     assertEquals("Южный Судан", location.countryName);
     assertEquals("Африка", location.city);
     assertEquals(4.85, location.latitude, 0.01);
     assertEquals(31.6, location.longitude, 0.0001);
+  }
+
+  @Test
+  public void databaseInfo() throws ParseException {
+    DatabaseInfo databaseInfo = lookupService.getDatabaseInfo();
+    // based on "GEO-533LITE 20180327 Build 1 Copyright (c) 2018 MaxMind Inc All Rights Reserved"
+    assertEquals(428, databaseInfo.getType());
+    assertEquals(new SimpleDateFormat("dd.MM.yyyy").parse("27.03.2018"), databaseInfo.getDate());
   }
 
   @After

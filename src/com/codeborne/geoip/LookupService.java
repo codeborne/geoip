@@ -690,7 +690,7 @@ public class LookupService {
         value = "";
       }
       if ("co".equals(key)) {
-        int i = (Integer) countryCodeToIndex.get(value);
+        int i = countryCodeToIndex.get(value);
         record.countryCode = value;
         record.countryName = countryName[i];
       }

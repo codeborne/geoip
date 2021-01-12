@@ -47,13 +47,12 @@ public class DatabaseInfo {
   public static final int NETSPEED_EDITION_REV1_V6 = 33;
 
 
-  private static SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+  private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
-  private String info;
+  private final String info;
 
   /**
    * Creates a new DatabaseInfo object given the database info String.
-   * @param info
    */
   public DatabaseInfo(String info) {
     this.info = info;
@@ -65,7 +64,7 @@ public class DatabaseInfo {
     }
     else {
       // Get the type code from the database info string and then
-      // subtract 105 from the value to preserve compatability with
+      // subtract 105 from the value to preserve compatibility with
       // databases from April 2003 and earlier.
       return Integer.parseInt(info.substring(4, 7)) - 105;
     }
@@ -82,8 +81,6 @@ public class DatabaseInfo {
 
   /**
    * Returns the date of the database.
-   *
-   * @return the date of the database.
    */
   public Date getDate() {
     for (int i = 0; i < info.length() - 9; i++) {
@@ -94,8 +91,9 @@ public class DatabaseInfo {
             return formatter.parse(dateString);
           }
         }
-        catch (ParseException pe) { }
-        break;
+        catch (ParseException pe) {
+          throw new RuntimeException(String.format("Invalid date: '%s'", dateString), pe);
+        }
       }
     }
     return null;
