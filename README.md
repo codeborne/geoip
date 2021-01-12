@@ -17,7 +17,21 @@ A library for searching Location information (country, city, region) by IP.
 
 ## How to start
 
-Download the latest jar from out repository: https://repo.codeborne.com/com/codeborne/geoip/
+Download the latest jar from central Maven repository:
+
+```xml
+<dependency>
+  <groupId>com.codeborne</groupId>
+  <artifactId>geoip</artifactId>
+  <version>1.4</version>
+</dependency>
+```
+
+# Development
+To upload a newer version to Maven central repo:
+1. Update version number in build.gradle
+2. Run `./gradlew -b deploy.gradle --info`
+3. Login to https://oss.sonatype.org/#stagingRepositories and go through standard flow (Artifact -> Close -> Release)
 
 # Data source
 
